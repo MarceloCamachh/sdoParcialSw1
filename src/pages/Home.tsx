@@ -6,6 +6,9 @@ import JoinProjectModal from "../components/JoinProjectModal";
 import { createDesign, getDesignsByUser, Design, getDesignById, deleteDesign } from "../services/designService";
 import { generateDesignFromUML } from "../utils/generateDesignFromUML";
 import { parseXMLFile } from "../utils/parseXML";
+import PromptModal from "../components/promptModal";
+import { extraerCSS, extraerHTML } from "../hooks/extraerPrompt";
+import { socket } from "../socket";
 
 export default function Home() {
   const [user, setUser] = useState<{ name: string; picture: string; email: string } | null>(null);
@@ -14,7 +17,8 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     if (storedUser?.email) {
@@ -82,7 +86,31 @@ export default function Home() {
       console.error(error);
     }
   };
+  const handleGeneratedDesign = async (code: string) => {
+    const html = extraerHTML(code);
+    const css = extraerCSS(code);
 
+    if (!user?.email) {
+      alert("Debes estar logueado para generar un diseño.");
+      return;
+    }
+
+    const newDesign = await createDesign({
+      title: "Diseño generado por prompt",
+      userEmail: user.email,
+      data: {
+        html,
+        css,
+      },
+    });
+
+    // Guarda el diseño local para GrapesJS
+    localStorage.setItem(`gjs-html-${newDesign.id}`, html);
+    localStorage.setItem(`gjs-css-${newDesign.id}`, css);
+
+    // Redirige al editor
+    navigate(`/canvas/${newDesign.id}`);
+  };
   return (
     <>
       <Navbar />
@@ -105,11 +133,16 @@ export default function Home() {
               🤝 Unirse a un proyecto
             </button>
             <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg shadow hover:bg-purple-700 transition"
+              onClick={() => setShowPromptModal(true)}
+              className="px-6 py-3 bg-pink-600 text-white font-medium rounded-lg shadow hover:bg-pink-700 transition"
             >
-              📂 Importar UML
+              💡 Diseñar por prompt
             </button>
+            <PromptModal
+              isOpen={showPromptModal}
+              onClose={() => setShowPromptModal(false)}
+              onGenerate={handleGeneratedDesign}
+            />
           </div>
         </section>
 

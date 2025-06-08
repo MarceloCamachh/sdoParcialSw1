@@ -179,7 +179,7 @@ useEffect(() => {
     console.log("🔄 Diseño recibido desde socket");
   };
 
-  socket.on("element:update", handleUpdate);
+  //socket.on("element:update", handleUpdate);
 
   return () => {
     socket.off("element:update", handleUpdate); // ✅ correcto
