@@ -1,0 +1,7 @@
+Convierte el siguiente diseño HTML + CSS en un archivo main.dart de Flutter que pueda ejecutarse directamente. El diseño debe usar widgets como Text, TextField, ElevatedButton, Image, etc.
+
+No uses explicaciones. Solo responde con el contenido completo de main.dart.
+
+Este es el diseño:
+
+[PEGAR AQUÍ el HTML + CSS]
