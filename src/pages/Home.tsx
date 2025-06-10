@@ -4,8 +4,6 @@ import Navbar from "../components/Navbar";
 import NewDesignModal from "../components/NewDesignModal";
 import JoinProjectModal from "../components/JoinProjectModal";
 import { createDesign, getDesignsByUser, Design, getDesignById, deleteDesign } from "../services/designService";
-import { generateDesignFromUML } from "../utils/generateDesignFromUML";
-import { parseXMLFile } from "../utils/parseXML";
 import PromptModal from "../components/promptModal";
 import { extraerCSS, extraerHTML } from "../hooks/extraerPrompt";
 import { socket } from "../socket";
@@ -16,7 +14,6 @@ export default function Home() {
   const [designs, setDesigns] = useState<Design[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPromptModal, setShowPromptModal] = useState(false);
   
   useEffect(() => {
@@ -31,28 +28,6 @@ export default function Home() {
     const data = await getDesignsByUser(email);
     setDesigns(data);
   };
-
-  const handleUploadXML = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const parsed = await parseXMLFile(file);
-    const extractedDesign = generateDesignFromUML(parsed);
-
-    if (!user?.email) {
-      alert("Debes estar logueado para importar un UML");
-      return;
-    }
-
-    const savedDesign = await createDesign({
-      title: extractedDesign.title,
-      data: extractedDesign.elements,
-      userEmail: user.email,
-    });
-
-    navigate(`/canvas/${savedDesign.id}`);
-  };
-
   const handleCreateDesign = async (title: string) => {
     if (!user?.email) {
       alert("Debes estar logueado para crear un diseño.");
@@ -146,13 +121,6 @@ export default function Home() {
           </div>
         </section>
 
-        <input
-          type="file"
-          accept=".xml"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={handleUploadXML}
-        />
 
         {user && (
           <section className="mt-12">
