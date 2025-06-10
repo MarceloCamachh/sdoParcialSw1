@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getDesignById, updateDesign, Design } from "../services/designService";
 import GrapesEditor from "./GrapesEditor"; // asegúrate de que exporte el editor que acepta roomId
 import { socket } from "../socket";
+import { exportFlutterProject } from "../utils/generateFlutter";
 
 export default function CanvasEditor() {
   const params = useParams<{ roomId?: string }>();
@@ -78,6 +79,13 @@ const css = localStorage.getItem(`gjs-css-${roomId}`) || "";
   >
     🔗 Compartir ID
   </button>
+  
+    <button
+      onClick={() => exportFlutterProject(roomId, currentDesign?.title || "Mi App")}
+      className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
+    >
+      📦 Exportar a Flutter
+    </button>
 </div>
       </div>
     </>
