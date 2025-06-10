@@ -195,11 +195,11 @@ export default function Home() {
       <p className="mt-2 text-gray-600">Colabora en vivo con tu equipo y visualiza cambios al instante.</p>
     </div>
     <div>
-      <h3 className="text-xl font-semibold text-indigo-700">Importa diagramas UML</h3>
-      <p className="mt-2 text-gray-600">Convierte bocetos o XML UML directamente en interfaces editables.</p>
+      <h3 className="text-xl font-semibold text-indigo-700">Diseña mediante un prompt </h3>
+      <p className="mt-2 text-gray-600">Realiza un diseño a traves de una idea textual</p>
     </div>
     <div>
-      <h3 className="text-xl font-semibold text-indigo-700">Exporta código Angular</h3>
+      <h3 className="text-xl font-semibold text-indigo-700">Exporta código Flutter</h3>
       <p className="mt-2 text-gray-600">Transforma tus diseños visuales en componentes listos para producción.</p>
     </div>
   </div>
