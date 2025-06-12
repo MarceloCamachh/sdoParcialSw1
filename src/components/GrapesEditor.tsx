@@ -8,7 +8,8 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<any>(null);
   const isRemoteChange = useRef(false); // ✅ FLAG para evitar loop
-    const [isEditorReady, setIsEditorReady] = useState(false); // ✅ asegura que el editor está montado
+  const [isEditorReady, setIsEditorReady] = useState(false); // ✅ asegura que el editor está montado
+  const sketch = localStorage.getItem("sketch");
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -67,7 +68,11 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
   console.log("CSS cargado desde localStorage:", css);
 
 });
-
+  if(sketch){
+    const objGrapes = JSON.parse(sketch);
+    editor.setComponents(objGrapes.objHtml);
+    editor.setStyle(objGrapes.objCss);
+  }
 
     // Bloques personalizados
     const bm = editor.BlockManager;

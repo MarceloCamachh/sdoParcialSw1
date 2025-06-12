@@ -40,3 +40,7 @@ export const deleteDesign = async (id: string) => {
   const response = await axios.delete(`${BACKEND_URL}/designs/${id}`);
   return response.data;
 };
+export const uploadScketch = async(body: FormData) => {
+  const response = await axios.post(`${BACKEND_URL}/imports`, body);
+  return response.data;
+}

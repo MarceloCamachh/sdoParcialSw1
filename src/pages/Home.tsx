@@ -7,6 +7,7 @@ import { createDesign, getDesignsByUser, Design, getDesignById, deleteDesign } f
 import PromptModal from "../components/promptModal";
 import { extraerCSS, extraerHTML } from "../hooks/extraerPrompt";
 import { socket } from "../socket";
+import SketchModal from "../components/sketchModal";
 
 export default function Home() {
   const [user, setUser] = useState<{ name: string; picture: string; email: string } | null>(null);
@@ -15,7 +16,8 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showPromptModal, setShowPromptModal] = useState(false);
-  
+  const [showSketchModal, setShowSketchModal] = useState(false);
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     if (storedUser?.email) {
@@ -86,6 +88,31 @@ export default function Home() {
     // Redirige al editor
     navigate(`/canvas/${newDesign.id}`);
   };
+  const handleGeneratedDesignBoceto = async (code: string) => {
+    const html = extraerHTML(code);
+    const css = extraerCSS(code);
+
+    if (!user?.email) {
+      alert("Debes estar logueado para generar un diseño.");
+      return;
+    }
+
+    const newDesign = await createDesign({
+      title: "Diseño generado por Reconocimiento de Boceto",
+      userEmail: user.email,
+      data: {
+        html,
+        css,
+      },
+    });
+
+    // Guarda el diseño local para GrapesJS
+    localStorage.setItem(`gjs-html-${newDesign.id}`, html);
+    localStorage.setItem(`gjs-css-${newDesign.id}`, css);
+
+    // Redirige al editor
+    navigate(`/canvas/${newDesign.id}`);
+  };
   return (
     <>
       <Navbar />
@@ -117,6 +144,17 @@ export default function Home() {
               isOpen={showPromptModal}
               onClose={() => setShowPromptModal(false)}
               onGenerate={handleGeneratedDesign}
+            />
+             <button
+              onClick={() => setShowSketchModal(true)}
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
+            >
+              💡Diseñar boceto
+            </button>
+            <SketchModal
+              isOpen={showSketchModal}
+              onClose={() => setShowSketchModal(false)}
+              onGenerate = {handleGeneratedDesignBoceto}
             />
           </div>
         </section>
