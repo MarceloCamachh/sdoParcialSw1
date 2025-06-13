@@ -6,6 +6,8 @@ export async function generateFlutterMainFromGemini(roomId: string, title: strin
 Convierte el siguiente diseño HTML + CSS en código Flutter dentro de un archivo main.dart ejecutable.
 
 - Usa widgets comunes como Text, ElevatedButton, TextField, etc.
+- El diseño debe ser responsivo y adaptarse pantalla de Telefono Movil.
+- El diseño debe no debe ser pensado para Web.
 - Aplica estilos cuando sea posible.
 - Usa MaterialApp y Scaffold.
 - El título de la App debe ser: "${title}"
