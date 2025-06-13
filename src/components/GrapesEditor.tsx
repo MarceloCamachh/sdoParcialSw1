@@ -74,6 +74,7 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
     const objGrapes = JSON.parse(sketch);
     editor.setComponents(objGrapes.objHtml);
     editor.setStyle(objGrapes.objCss);
+    //localStorage.removeItem("sketch");
   }
     // Bloques personalizados
     const bm = editor.BlockManager;

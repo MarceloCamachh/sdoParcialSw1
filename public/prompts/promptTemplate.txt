@@ -6,6 +6,7 @@ RESTRICCIONES:
 - No incluyas explicaciones ni comentarios.
 - El código debe ser válido, limpio y listo para ser insertado en un editor visual como GrapesJS.
 - No uses viaplaceholder para las imagenes, puedes usar por ejemplo esta: https://picsum.photos/200
+- El diseño debe ser responsivo 
 
 REQUERIMIENTO:
 {{user_prompt}}
