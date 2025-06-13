@@ -10,6 +10,7 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
   const isRemoteChange = useRef(false); // ✅ FLAG para evitar loop
   const [isEditorReady, setIsEditorReady] = useState(false); // ✅ asegura que el editor está montado
   const sketch = localStorage.getItem("sketch");
+  const clientId = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -50,6 +51,7 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
 
   socket.emit("element:update", {
     roomId,
+    clientId: clientId.current,
     frame: { html, css },
   });
 };
@@ -68,12 +70,11 @@ export default function GrapesEditor({ roomId }: { roomId: string }) {
   console.log("CSS cargado desde localStorage:", css);
 
 });
-  if(sketch){
+    if(sketch){
     const objGrapes = JSON.parse(sketch);
     editor.setComponents(objGrapes.objHtml);
     editor.setStyle(objGrapes.objCss);
   }
-
     // Bloques personalizados
     const bm = editor.BlockManager;
 
@@ -165,26 +166,37 @@ useEffect(() => {
   const editor = editorInstance.current;
   if (!editor) return;
 
-  const handleUpdate = ({ frame }: any) => {
-    if (!frame?.html) return;
+  const handleUpdate = ({ clientId: senderId, frame }: any) => {
+  if (senderId === clientId.current) return; // ✅ me ignoro a mí mismo
 
-    const currentHtml = editor.getHtml();
-    const currentCss = editor.getCss();
+  const currentHtml = editor.getHtml();
+  const currentCss = editor.getCss();
 
-    const isSameHtml = currentHtml.trim() === frame.html.trim();
-    const isSameCss = (currentCss || "").trim() === (frame.css || "").trim();
+  const isSameHtml = currentHtml.trim() === frame.html.trim();
+  const isSameCss = (currentCss || "").trim() === (frame.css || "").trim();
 
-    if (isSameHtml && isSameCss) return;
+  if (isSameHtml && isSameCss) return;
 
-    isRemoteChange.current = true;
-    editor.setComponents(frame.html || "");
-    editor.setStyle(frame.css || "");
-    isRemoteChange.current = false;
+  isRemoteChange.current = true;
 
-    console.log("🔄 Diseño recibido desde socket");
-  };
+ editor.setComponents(frame.html || "");
 
-  //socket.on("element:update", handleUpdate);
+editor.once("load", () => {
+  const css = frame.css || "";
+  editor.setStyle(css);
+  isRemoteChange.current = false;
+  console.log("✅ CSS aplicado tras carga de GrapesJS");
+});
+
+// Por si el editor ya estaba cargado:
+if (editor.getWrapper()) {
+  editor.setStyle(frame.css || "");
+  isRemoteChange.current = false;
+  console.log("✅ CSS aplicado directamente (canvas ya cargado)");
+}
+};
+
+  socket.on("element:update", handleUpdate);
 
   return () => {
     socket.off("element:update", handleUpdate); // ✅ correcto
